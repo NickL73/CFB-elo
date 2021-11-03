@@ -8,6 +8,7 @@ INITIAL_FCS = 1200.0 # the assigned starting Elo for a non-FBS team
 HFA = 65.0
 K = 25.0 # the speed at which Elo ratings change
 REVERT = 1/3 # Between seasons, a team retains 2/3 of its previous season's rating
+CONF = 35.0 # Extra elo points are awarded for a conference game
 
 
 # Load the game data
@@ -64,6 +65,7 @@ for game in games:
 
 		# Calculate the difference in elo between the home and away teams
 		elo_diff = home_team['elo'] - away_team['elo'] + (0 if game['neutral_site'] else HFA) # add home field advantage if applicable
+		elo_diff = elo_diff + (0 if game['home_conference'] != game['away_conference'] else CONF)
 		#print(game)
 		# Calculate the forecasted probability by ELO score
 		exp = -elo_diff / 400
@@ -102,5 +104,6 @@ for e in range(len(end_elos)):
 		del end_elos[e]
 """
 
-for t in range(50):
-  print("{0:>3}. {1:>20} - {2:<12}".format(t+1, end_elos[t]['team'], end_elos[t]['elo']))
+with open('rankings.txt', 'w') as file:
+	for t in range(len(end_elos)):
+  		file.write("{0:>3}. {1:>20} - {2:<12}\n".format(t+1, end_elos[t]['team'], end_elos[t]['elo']))
